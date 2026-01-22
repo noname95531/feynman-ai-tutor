@@ -1,0 +1,140 @@
+[
+    {
+      "id": "python_basics_root",
+      "label": "Python 基礎",
+      "description": "學習Python程式語言的核心概念與基本語法，為進階開發打下堅實基礎。",
+      "parentId": null
+    },
+    {
+      "id": "py_vars_data_types",
+      "label": "變數與資料型態",
+      "description": "理解Python中如何儲存和操作不同種類的資料，包括數字、字串等。",
+      "parentId": "python_basics_root"
+    },
+    {
+      "id": "py_operators_expressions",
+      "label": "運算子與表達式",
+      "description": "學習Python中各種運算符號的使用，以及如何構建有效的表達式進行計算和邏輯判斷。",
+      "parentId": "python_basics_root"
+    },
+    {
+      "id": "py_control_flow",
+      "label": "控制流",
+      "description": "掌握如何根據條件執行不同程式碼區塊，以及重複執行特定程式碼的技巧。",
+      "parentId": "python_basics_root"
+    },
+    {
+      "id": "py_basic_data_structures",
+      "label": "資料結構基礎",
+      "description": "探索Python內建的基礎資料結構，如列表、元組、字典和集合，學習它們的特性與應用。",
+      "parentId": "python_basics_root"
+    },
+    {
+      "id": "py_functions",
+      "label": "函數",
+      "description": "學習如何定義和使用函數來組織程式碼，提高程式的模組化和可重用性。",
+      "parentId": "python_basics_root"
+    },
+    {
+      "id": "py_var_declaration",
+      "label": "變數宣告與賦值",
+      "description": "學習如何在Python中定義變數並將數值賦予它們，理解變數命名的規則。",
+      "parentId": "py_vars_data_types"
+    },
+    {
+      "id": "py_numeric_types",
+      "label": "數字型態 (整數、浮點數)",
+      "description": "了解Python中的整數和浮點數，以及它們的基本運算和表示方式。",
+      "parentId": "py_vars_data_types"
+    },
+    {
+      "id": "py_string_type",
+      "label": "字串型態",
+      "description": "學習如何創建、操作和格式化字串，包括索引、切片和常用方法。",
+      "parentId": "py_vars_data_types"
+    },
+    {
+      "id": "py_boolean_type",
+      "label": "布林型態",
+      "description": "理解布林值True和False，以及它們在條件判斷中的應用。",
+      "parentId": "py_vars_data_types"
+    },
+    {
+      "id": "py_arithmetic_ops",
+      "label": "算術運算子",
+      "description": "學習加、減、乘、除、取模等基本數學運算符號的使用。",
+      "parentId": "py_operators_expressions"
+    },
+    {
+      "id": "py_comparison_ops",
+      "label": "比較運算子",
+      "description": "掌握等於、不等於、大於、小於等比較運算符，用於判斷數值關係。",
+      "parentId": "py_operators_expressions"
+    },
+    {
+      "id": "py_logical_ops",
+      "label": "邏輯運算子",
+      "description": "理解and、or、not等邏輯運算符，用於組合或反轉布林表達式。",
+      "parentId": "py_operators_expressions"
+    },
+    {
+      "id": "py_conditional_statements",
+      "label": "條件判斷 (if/elif/else)",
+      "description": "學習如何使用if、elif和else語句，根據不同條件執行不同的程式碼區塊。",
+      "parentId": "py_control_flow"
+    },
+    {
+      "id": "py_for_loop",
+      "label": "for 迴圈",
+      "description": "掌握for迴圈的語法，用於遍歷序列（如列表、字串）中的元素。",
+      "parentId": "py_control_flow"
+    },
+    {
+      "id": "py_while_loop",
+      "label": "while 迴圈",
+      "description": "學習while迴圈，用於在特定條件為真時重複執行程式碼區塊。",
+      "parentId": "py_control_flow"
+    },
+    {
+      "id": "py_break_continue",
+      "label": "break 和 continue",
+      "description": "理解如何使用break跳出迴圈，以及使用continue跳過當前迭代。",
+      "parentId": "py_control_flow"
+    },
+    {
+      "id": "py_list",
+      "label": "列表 (List)",
+      "description": "學習Python列表的創建、修改、索引、切片和常用方法，它是可變的序列。",
+      "parentId": "py_basic_data_structures"
+    },
+    {
+      "id": "py_tuple",
+      "label": "元組 (Tuple)",
+      "description": "了解Python元組的創建和使用，它是不可變的序列，常用於固定資料集。",
+      "parentId": "py_basic_data_structures"
+    },
+    {
+      "id": "py_dictionary",
+      "label": "字典 (Dictionary)",
+      "description": "掌握Python字典的鍵值對存儲方式，包括創建、存取、修改和常用操作。",
+      "parentId": "py_basic_data_structures"
+    },
+    {
+      "id": "py_func_definition_call",
+      "label": "定義與呼叫函數",
+      "description": "學習如何使用def關鍵字定義函數，以及如何傳遞參數並呼叫函數。",
+      "parentId": "py_functions"
+    },
+    {
+      "id": "py_func_parameters",
+      "label": "函數參數 (預設值、關鍵字參數)",
+      "description": "探索不同類型的函數參數，包括位置參數、關鍵字參數和預設參數。",
+      "parentId": "py_functions"
+    },
+    {
+      "id": "py_func_return",
+      "label": "返回值 (return)",
+      "description": "理解函數如何使用return語句返回結果，以及多個返回值的情況。",
+      "parentId": "py_functions"
+    }
+  ]

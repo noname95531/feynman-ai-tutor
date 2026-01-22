@@ -1,11 +1,19 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Bot, Send, Mic, MicOff, AlertCircle, CheckCircle, Info, X } from 'lucide-react';
+import { Bot, Send, Mic, MicOff, AlertCircle, CheckCircle, Info, X, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabaseClient';
 import { apiRequest } from '@/lib/config';
 import type { TreeNode } from '@/store/useStore';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 type Role = 'user' | 'assistant';
 
@@ -47,6 +55,13 @@ export default function AITutorTab({
   // Toast 通知狀態
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
+  // 密碼修改相關狀態
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
   // Toast 輔助函數
   const showToast = (message: string, type: 'info' | 'success' | 'error') => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -61,6 +76,82 @@ export default function AITutorTab({
 
   const removeToast = (id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  // 監聽 Auth 狀態變化
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth event:', event, session);
+
+      // 檢查是否是密碼重設事件或新邀請用戶
+      if (event === 'PASSWORD_RECOVERY') {
+        showToast('請設定您的新密碼', 'info');
+        setShowPasswordDialog(true);
+      } else if (event === 'SIGNED_IN' && session?.user) {
+        // 檢查用戶是否是通過邀請連結進來的
+        // 通常邀請用戶的 email_confirmed_at 會是 null 或者 user_metadata 會有特殊標記
+        const user = session.user;
+        
+        // 檢查是否是新邀請用戶（沒有設定密碼）
+        if (user.email_confirmed_at && !user.user_metadata?.password_set) {
+          showToast('歡迎！請設定您的密碼', 'info');
+          setShowPasswordDialog(true);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // 處理密碼更新
+  const handlePasswordUpdate = async () => {
+    if (!newPassword || !confirmPassword) {
+      setPasswordError('請填寫所有欄位');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('密碼至少需要 6 個字元');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('密碼確認不一致');
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    setPasswordError(null);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+        data: { password_set: true } // 標記密碼已設定
+      });
+
+      if (error) {
+        setPasswordError(error.message);
+        return;
+      }
+
+      showToast('密碼設定成功！', 'success');
+      setShowPasswordDialog(false);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      console.error('Password update error:', error);
+      setPasswordError('密碼更新失敗，請稍後再試');
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  // 關閉密碼對話框
+  const handleClosePasswordDialog = () => {
+    setShowPasswordDialog(false);
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError(null);
   };
 
   // Load chat history when node changes
@@ -757,6 +848,84 @@ export default function AITutorTab({
           ))}
         </AnimatePresence>
       </div>
+
+      {/* 密碼設定 Dialog */}
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5 text-indigo-600" />
+              設定您的密碼
+            </DialogTitle>
+            <DialogDescription>
+              為了保護您的帳戶安全，請設定一個新密碼。
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                新密碼
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="至少 6 個字元"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none ring-offset-background placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                disabled={isUpdatingPassword}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                確認密碼
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="再次輸入密碼"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm outline-none ring-offset-background placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                disabled={isUpdatingPassword}
+              />
+            </div>
+
+            {passwordError && (
+              <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 p-3">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <p className="text-sm text-red-800">{passwordError}</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={handleClosePasswordDialog}
+              disabled={isUpdatingPassword}
+              className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            >
+              稍後設定
+            </button>
+            <button
+              type="button"
+              onClick={handlePasswordUpdate}
+              disabled={isUpdatingPassword || !newPassword || !confirmPassword}
+              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            >
+              {isUpdatingPassword && (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+                />
+              )}
+              {isUpdatingPassword ? '設定中...' : '確認設定'}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

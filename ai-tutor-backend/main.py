@@ -130,7 +130,11 @@ app = FastAPI(title="AI Feynman Tutor API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], 
+    allow_origins=[
+        "http://localhost:3000",
+        "feynman-ai-tutor-amber.vercel.app", # 🔥 新增 Vercel 的網址
+        "*" # (測試時可先用 * 允許所有，但不建議長期使用)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
